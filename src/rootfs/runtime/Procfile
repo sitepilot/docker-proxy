@@ -1,0 +1,2 @@
+dockergen: docker-gen -config /runtime/docker-gen.conf
+nginx: nginx -g 'daemon off;'

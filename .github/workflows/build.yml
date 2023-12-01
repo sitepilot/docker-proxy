@@ -1,0 +1,20 @@
+name: build
+
+on:
+  push:
+    branches:
+      - 1.x
+    paths:
+      - 'src/**'
+  schedule:
+    - cron: '25 4 * * *'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  proxy:
+    uses: ./.github/workflows/build-and-test-job.yml
+    with:
+      tests: |
+        docker run ghcr.io/sitepilot/docker-proxy:build docker-gen -v
+    secrets: inherit

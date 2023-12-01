@@ -1,0 +1,42 @@
+{{ range $port, $containers := groupByMulti $ "Env.SP_PROXY_PORT" "," }}
+upstream stream_{{ $port }} {
+
+{{ range $index, $value := $containers }}
+
+	{{ $addrLen := len $value.Addresses }}
+	{{ $network := index $value.Networks 0 }}
+
+	{{/* If only 1 port exposed, use that */}}
+	{{ if eq $addrLen 1 }}
+		{{ with $address := index $value.Addresses 0 }}
+			# {{$value.Name}}
+			server {{ $network.IP }}:{{ $address.Port }};
+		{{ end }}
+
+	{{/* If more than one port exposed, use the one matching SP_STREAM_CONTAINER_PORT env var */}}
+	{{ else if $value.Env.SP_STREAM_CONTAINER_PORT }}
+		{{ range $i, $address := $value.Addresses }}
+			{{ if eq $address.Port $value.Env.SP_STREAM_CONTAINER_PORT }}
+			# {{$value.Name}}
+			server {{ $network.IP }}:{{ $address.Port }};
+			{{ end }}
+		{{ end }}
+
+	{{/* Else default to standard web port 80 */}}
+	{{ else }}
+		{{ range $i, $address := $value.Addresses }}
+			{{ if eq $address.Port "80" }}
+			# {{$value.Name}}
+			server {{ $network.IP }}:{{ $address.Port }};
+			{{ end }}
+		{{ end }}
+	{{ end }}
+{{ end }}
+}
+
+server {
+	listen {{ $port }};
+
+	proxy_pass stream_{{ trim $port }};
+}
+{{ end }}
