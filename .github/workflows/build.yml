@@ -16,5 +16,5 @@ jobs:
     uses: ./.github/workflows/build-and-test-job.yml
     with:
       tests: |
-        docker run ghcr.io/sitepilot/proxy:build docker-gen -v
+        docker run ghcr.io/sitepilot/proxy:build docker-gen -version
     secrets: inherit
