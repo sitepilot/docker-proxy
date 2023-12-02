@@ -27,14 +27,14 @@ services:
   stream1:
     image: jwilder/whoami
     environment:
-      SP_PROXY_PORT: 9081
+      SP_STREAM_PORT: 9081
 
   stream2:
     image: jwilder/whoami
     environment:
-      SP_PROXY_PORT: 9081
+      SP_STREAM_PORT: 9081
 
   stream3:
     image: jwilder/whoami
     environment:
-      SP_PROXY_PORT: 9081
+      SP_STREAM_PORT: 9081
