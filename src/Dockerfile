@@ -1,5 +1,3 @@
-FROM nginxproxy/forego:0.17.2-debian AS forego
-
 FROM ghcr.io/sitepilot/runtime:v1 AS proxy
 
 ARG TARGETARCH
@@ -18,8 +16,6 @@ RUN rt-install nginx libnginx-mod-stream \
 
 RUN wget -O - https://github.com/nginx-proxy/docker-gen/releases/download/$DOCKERGEN_VERSION/docker-gen-linux-$TARGETARCH-$DOCKERGEN_VERSION.tar.gz | tar xzf - -C /usr/local/bin
 
-COPY --from=forego /usr/local/bin/forego /usr/local/bin/forego
-
 COPY --chown=$RUNTIME_UID:$RUNTIME_GID rootfs /
 
-CMD ["forego", "start", "-f", "/runtime/Procfile"]
+CMD ["/proxy"]

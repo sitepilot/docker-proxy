@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Start docker-gen
+docker-gen -config /runtime/docker-gen.conf &
+DOCKER_GEN_PID=$!
+
+# Start nginx
+nginx -g 'daemon off;' &
+NGINX_PID=$!
+
+# Stop nginx
+trap 'echo SIGINT; kill -s SIGINT $DOCKER_GEN_PID $NGINX_PID' SIGINT
+trap 'echo SIGTERM; kill -s SIGTERM $DOCKER_GEN_PID $NGINX_PID' SIGTERM
+
+# Wait for any process to exit
+wait -n
+
+# Exit with status of process that exited first
+exit $?
