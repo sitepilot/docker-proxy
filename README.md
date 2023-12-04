@@ -49,6 +49,10 @@ docker run -e PROXY_STREAM_PORT=8080  ...
 
 If you start more containers with the same `PROXY_STREAM_PORT` environment variable, the proxy will load-balance traffic between these containers.
 
+### Additional upstream servers
+
+When a container is deployed to multiple servers, you can specify additional upstream servers with the `PROXY_HTTP_SERVERS` and `PROXY_STREAM_SERVERS` environment variable. The proxy will include these servers in the upstream configuration and load-balance traffic among them.
+
 ## Proxy Configuration
 
 The following environment variables are available to modify the configuration of the proxy container:

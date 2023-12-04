@@ -13,6 +13,7 @@ services:
     image: jwilder/whoami
     environment:
       PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
+      PROXY_HTTP_UPSTREAMS: 1.2.3.4:80,1.2.3.5:80
 
   web2:
     image: nginx
@@ -28,6 +29,7 @@ services:
     image: jwilder/whoami
     environment:
       PROXY_STREAM_PORT: 9081
+      PROXY_STREAM_UPSTREAMS: 1.2.3.4:81,1.2.3.5:81
 
   stream2:
     image: jwilder/whoami
