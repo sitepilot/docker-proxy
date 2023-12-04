@@ -1,6 +1,6 @@
 # Docker Proxy
 
-Docker Proxy is an automated Nginx proxy for Docker which can proxy and load-balance HTTP and TCP/UDP traffic to
+Docker Proxy is an automated Nginx reverse proxy for Docker which can proxy and load-balance HTTP and TCP/UDP traffic to
 containers.
 
 This image is based on our [Docker Runtime](https://github.com/sitepilot/docker-runtime) image, an optimized and
