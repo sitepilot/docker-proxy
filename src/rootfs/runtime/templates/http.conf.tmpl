@@ -62,7 +62,7 @@ upstream {{ $host }} {
     {{ end }}
 {{ end }}
 
-{{ range $server, $containers := groupByMulti $containers "Env.PROXY_HTTP_UPSTREAMS" "," }}
+{{ range $server, $containers := groupByMulti $containers "Env.PROXY_HTTP_SERVERS" "," }}
     # {{ $server }}
     server {{ $server }};
 {{ end }}

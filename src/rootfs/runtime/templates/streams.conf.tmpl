@@ -33,7 +33,7 @@ upstream stream_{{ $port }} {
     {{ end }}
 {{ end }}
 
-{{ range $server, $containers := groupByMulti $containers "Env.PROXY_STREAM_UPSTREAMS" "," }}
+{{ range $server, $containers := groupByMulti $containers "Env.PROXY_STREAM_SERVERS" "," }}
     # {{ $server }}
     server {{ $server }};
 {{ end }}
