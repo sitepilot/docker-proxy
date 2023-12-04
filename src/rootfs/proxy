@@ -8,7 +8,7 @@ DOCKER_GEN_PID=$!
 nginx -g 'daemon off;' &
 NGINX_PID=$!
 
-# Stop nginx
+# Stop services
 trap 'echo SIGINT; kill -s SIGINT $DOCKER_GEN_PID $NGINX_PID' SIGINT
 trap 'echo SIGTERM; kill -s SIGTERM $DOCKER_GEN_PID $NGINX_PID' SIGTERM
 

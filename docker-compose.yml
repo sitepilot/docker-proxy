@@ -5,36 +5,36 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
     environment:
-      PROXY_HTTP_PORT: 9080
-      PROXY_HTTPS_PORT: 9443
+      NGINX_HTTP_PORT: 9080
+      NGINX_HTTPS_PORT: 9443
     network_mode: "host"
 
   web:
     image: jwilder/whoami
     environment:
-      SP_PROXY_HOST: whoami.d1x.sitepilot.io
+      PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
 
   web2:
     image: nginx
     environment:
-      SP_PROXY_HOST: whoami.d1x.sitepilot.io
+      PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
 
   web3:
     image: jwilder/whoami
     environment:
-      SP_PROXY_HOST: whoami.d1x.sitepilot.io
+      PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
 
   stream1:
     image: jwilder/whoami
     environment:
-      SP_STREAM_PORT: 9081
+      PROXY_STREAM_PORT: 9081
 
   stream2:
     image: jwilder/whoami
     environment:
-      SP_STREAM_PORT: 9081
+      PROXY_STREAM_PORT: 9081
 
   stream3:
     image: jwilder/whoami
     environment:
-      SP_STREAM_PORT: 9081
+      PROXY_STREAM_PORT: 9081
