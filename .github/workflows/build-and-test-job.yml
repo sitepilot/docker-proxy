@@ -30,7 +30,7 @@ jobs:
       - name: Get version from branch name
         run: |
           export BRANCH=${GITHUB_REF##*/}
-          echo "VERSION=v${BRANCH/.x/}" >> $GITHUB_ENV
+          echo "VERSION=${BRANCH}" >> $GITHUB_ENV
 
       - name: Build test image
         uses: docker/build-push-action@v5
