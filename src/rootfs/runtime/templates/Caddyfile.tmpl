@@ -1,0 +1,88 @@
+# Caddy Proxy Configuration
+{{- $globals := dict }}
+{{- $_ := set $globals "Env" $.Env }}
+
+{
+    storage file_system {{ $globals.Env.CADDY_DATA_DIR }}
+}
+
+:443 {
+{{ if and $globals.Env.PROXY_SSL_CERT_FILE $globals.Env.PROXY_SSL_KEY_FILE }}
+    tls {{ $globals.Env.PROXY_SSL_CERT_FILE }} {{ $globals.Env.PROXY_SSL_KEY_FILE }}
+{{ else }}
+    tls internal {
+        on_demand
+    }
+{{ end }}
+
+    respond "Service Unavailable (503)" 503
+}
+
+{{ range $host, $containers := groupByMulti $ "Env.PROXY_HOST" "," }}
+{{ $host }} {
+
+{{- $container := index $containers 0 }}
+{{- $ssl_email := coalesce $container.Env.PROXY_SSL_EMAIL $globals.Env.PROXY_SSL_EMAIL }}
+{{- $ssl_key_path := coalesce $container.Env.PROXY_SSL_KEY_FILE $globals.Env.PROXY_SSL_KEY_FILE }}
+{{- $ssl_cert_path := coalesce $container.Env.PROXY_SSL_CERT_FILE $globals.Env.PROXY_SSL_CERT_FILE }}
+{{- $basic_auth := coalesce $container.Env.PROXY_BASIC_AUTH $globals.Env.PROXY_BASIC_AUTH }}
+{{- $lb_retries := coalesce $container.Env.PROXY_LB_RETRIES "3" }}
+{{- $lb_policy := coalesce $container.Env.PROXY_LB_POLICY "round_robin" }}
+
+{{ if and (eq $ssl_email "internal") $ssl_cert_path $ssl_cert_path }}
+    tls {{ $ssl_cert_path }} {{ $ssl_key_path }} {
+        on_demand
+    }
+{{ else }}
+    tls {{ $ssl_email }} {
+        on_demand
+    }
+{{ end }}
+
+{{ if $basic_auth }}
+    basicauth /* {
+    	{{ $basic_auth }}
+    }
+{{ end }}
+
+    reverse_proxy {
+        lb_retries {{ $lb_retries }}
+        lb_policy {{ $lb_policy }}
+{{ range $index, $container := $containers }}
+
+    {{ $addrLen := len $container.Addresses }}
+    {{ $network := index $container.Networks 0 }}
+
+    {{/* If only 1 port exposed, use that */}}
+    {{ if eq $addrLen 1 }}
+        {{ with $address := index $container.Addresses 0 }}
+        # {{$container.Name}}
+        to {{ $network.IP }}:{{ $address.Port }}
+        {{ end }}
+
+    {{/* If more than one port exposed, use the one matching PROXY_PORT env var */}}
+    {{ else if $container.Env.PROXY_PORT }}
+        {{ range $i, $address := $container.Addresses }}
+            {{ if eq $address.Port $container.Env.PROXY_PORT }}
+        # {{$container.Name}}
+        to {{ $network.IP }}:{{ $address.Port }}
+            {{ end }}
+        {{ end }}
+
+    {{/* Else default to standard web port 80 */}}
+    {{ else }}
+        {{ range $i, $address := $container.Addresses }}
+            {{ if eq $address.Port "80" }}
+        # {{$container.Name}}
+        to {{ $network.IP }}:{{ $address.Port }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ range $server, $containers := groupByMulti $containers "Env.PROXY_SERVERS" "," }}
+        # external upstream: {{ $server }}
+        to {{ $server }}
+{{ end }}
+    }
+}
+{{ end }}

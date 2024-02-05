@@ -1,7 +1,7 @@
 # Docker Proxy
 
-Docker Proxy is an automated Nginx reverse proxy for Docker which can proxy and load-balance HTTP and TCP/UDP traffic to
-containers.
+Docker Proxy is an automated Caddy reverse proxy for Docker which can proxy and load-balance HTTP traffic to
+containers and automatically issue SSL-certificates.
 
 This image is based on our [Docker Runtime](https://github.com/sitepilot/docker-runtime) image, an optimized and
 extensible Ubuntu container image.
@@ -10,67 +10,90 @@ extensible Ubuntu container image.
 
 The containers being proxied must be in the same network and expose the port to be proxied, either using the `EXPOSE`
 directive in their `Dockerfile` or with the `--expose` flag when running the `docker run` or `docker create` command. To
-proxy traffic to a container, add `PROXY_HTTP_HOST` or `PROXY_STREAM_PORT` to the container's environment.
+proxy traffic to a container, add `PROXY_HOST` to the container's environment.
 
-When your container exposes only one port, nginx-proxy will default to that port; otherwise, it defaults to port 80. If
-you need to specify a different port, you can set either the `PROXY_HTTP_CONTAINER_PORT`
-or `PROXY_STREAM_CONTAINER_PORT`
-environment variable to select an alternative one. Note that this variable cannot be set to more than one port. A
-container can expose one HTTP and one TCP/UDP port through the proxy.
+When your container exposes only one port, the proxy will default to that port; otherwise, it defaults to port 80. If
+you need to specify a different port, you can set the `PROXY_PORT` environment variable to select an alternative one.
+Note that this variable cannot be set to more than one port. A
+container can expose one HTTP port through the proxy.
 
-### HTTP Proxy
-
-Start the proxy container with the following command:
-
-```bash
-docker run -d -p 80:80 -p 443:443 -v /var/run/docker.sock:/tmp/docker.sock:ro ghcr.io/sitepilot/proxy:v1
-```
-
-Then, start any containers you want to be proxied with the `PROXY_HTTP_HOST` environment variable:
-
-```bash
-docker run -e PROXY_HTTP_HOST=subdomain.example.com  ...
-```
-
-If you start more containers with the same `PROXY_HTTP_HOST` environment variable, the proxy will load-balance traffic
-between these containers.
-
-### TCP/UDP Proxy (stream)
+### Getting Started
 
 Start the proxy container with the following command:
 
 ```bash
-docker run -d -p 8080:8080 -v /var/run/docker.sock:/tmp/docker.sock:ro ghcr.io/sitepilot/proxy:v1
+docker run -d --rm \
+  -p 80:80 -p 443:443 \
+  -v proxy_data:/app/data \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  ghcr.io/sitepilot/proxy:latest
 ```
 
-Then, start any containers you want to be proxied with the `PROXY_STREAM_PORT` environment variable:
+Then, start any containers you want to be proxied with the `PROXY_HOST` environment variable:
 
 ```bash
-docker run -e PROXY_STREAM_PORT=8080  ...
+docker run -e PROXY_HOST=subdomain.example.com  ...
 ```
 
-If you start more containers with the same `PROXY_STREAM_PORT` environment variable, the proxy will load-balance traffic
+If you start more containers with the same `PROXY_HOST` environment variable, the proxy will load-balance traffic
 between these containers.
 
-### Additional upstream servers
+### Automatic SSL
 
-When a container is deployed to multiple servers, you can specify additional upstream servers with
-the `PROXY_HTTP_SERVERS` and `PROXY_STREAM_SERVERS` environment variable. The proxy will include these servers in the
-upstream configuration and load-balance traffic among them.
+By default, a self-signed certificate is used. If you would like to enable automatic SSL-certificate issuing, you need
+to set the `PROXY_SSL_EMAIL` environment variable to a valid email address on the container.
 
-## Proxy Configuration
+```bash
+docker run \
+  -e PROXY_SSL_EMAIL=letsencrypt@example.com \
+  -e PROXY_HOST=subdomain.example.com \
+  ...
+```
 
-The following environment variables are available to modify the configuration of the proxy container:
+To enable automatic HTTPS for all proxied containers set the `PROXY_SSL_EMAIL` environment variable
+on the proxy container itself.
 
-| Name                      | Value             |
-|---------------------------|-------------------|
-| `NGINX_HTTP_PORT`         | `80`              |
-| `NGINX_HTTPS_PORT`        | `443`             |
-| `NGINX_GZIP_ENABLED`      | `true`            |
-| `NGINX_GZIP_COMP_LEVEL`   | `5`               |
-| `NGINX_GZIP_VARY`         | `on`              |
-| `NGINX_GZIP_PROXIED`      | `any`             |
-| `NGINX_GZIP_STATIC`       | `off`             |
-| `NGINX_SET_REAL_IP_FROM`  | `0.0.0.0/0`       |
-| `NGINX_REAL_IP_HEADER`    | `X-Forwarded-For` |
-| `NGINX_REAL_IP_RECURSIVE` | `on`              |
+### Custom SSL-certificate
+
+To use a custom SSL-certificate, specify the `PROXY_SSL_KEY_FILE` and `PROXY_SSL_CERT_FILE` environment
+variables on the container.
+
+```bash
+docker run \
+  -e PROXY_SSL_KEY_FILE=/certs/example.com.key \
+  -e PROXY_SSL_CERT_FILE=/certs/example.com.cert \
+  -e PROXY_HOST=example.com \
+  ...
+```
+
+⚠️ Ensure that both files exist in the proxy container.
+
+To enable a custom (wildcard) SSL-certificate for all proxied containers set the `PROXY_SSL_KEY_FILE`
+and `PROXY_SSL_CERT_FILE` environment variables on the proxy container itself.
+
+### HTTP Basic Authentication
+
+To enable HTTP Basic Authentication, specify the `PROXY_BASIC_AUTH` environment variable on the container.
+
+```bash
+docker run \
+  -e PROXY_BASIC_AUTH='Bob $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG' \
+  -e PROXY_HOST=example.com \
+  ...
+```
+
+To enable HTTP Basic Authentication for all proxied containers set the `PROXY_BASIC_AUTH` environment variable
+on the proxy container itself.
+
+### Additional Servers
+
+When deploying a container to multiple servers, you can specify additional upstream servers (comma-separated) using
+the `PROXY_SERVERS` environment variable. The proxy will include these servers in the configuration and
+load-balance traffic among them.
+
+```bash
+docker run \
+  -e PROXY_SERVERS=1.2.3.4:80,1.2.3.5:80\
+  -e PROXY_HOST=example.com \
+  ...
+```

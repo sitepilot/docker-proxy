@@ -4,13 +4,13 @@
 docker-gen -config /runtime/docker-gen.conf &
 DOCKER_GEN_PID=$!
 
-# Start nginx
-nginx -g 'daemon off;' &
-NGINX_PID=$!
+# Start caddy
+caddy run --adapter caddyfile --config /etc/caddy/Caddyfile &
+CADDY_PID=$!
 
 # Stop services
-trap 'echo SIGINT; kill -s SIGINT $DOCKER_GEN_PID $NGINX_PID' SIGINT
-trap 'echo SIGTERM; kill -s SIGTERM $DOCKER_GEN_PID $NGINX_PID' SIGTERM
+trap 'echo SIGINT; kill -s SIGINT $DOCKER_GEN_PID $CADDY_PID' SIGINT
+trap 'echo SIGTERM; kill -s SIGTERM $DOCKER_GEN_PID $CADDY_PID' SIGTERM
 
 # Wait for any process to exit
 wait -n
