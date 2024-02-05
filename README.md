@@ -16,12 +16,12 @@ When your container exposes only one port, the proxy will default to that port; 
 you need to specify a different port, you can set the `PROXY_HTTP_CONTAINER_PORT` environment variable to select an alternative one. Note that this variable cannot be set to more than one port. A
 container can expose one HTTP port through the proxy.
 
-### HTTP Proxy
+### Getting Started
 
 Start the proxy container with the following command:
 
 ```bash
-docker run -d -p 80:80 -p 443:443 -v /var/run/docker.sock:/var/run/docker.sock:ro ghcr.io/sitepilot/proxy:2.x
+docker run -d -p 80:80 -p 443:443 -v /var/run/docker.sock:/var/run/docker.sock:ro ghcr.io/sitepilot/proxy:latest
 ```
 
 Then, start any containers you want to be proxied with the `PROXY_HTTP_HOST` environment variable:
@@ -33,16 +33,20 @@ docker run -e PROXY_HTTP_HOST=subdomain.example.com  ...
 If you start more containers with the same `PROXY_HTTP_HOST` environment variable, the proxy will load-balance traffic
 between these containers.
 
-### Additional upstream servers
+### Automatic HTTPS
 
-When a container is deployed to multiple servers, you can specify additional upstream servers with
-the `PROXY_HTTP_SERVERS` environment variable. The proxy will include these servers in the
-upstream configuration and load-balance traffic among them.
+By default, a self-signed certificate is used. If you would like to enable automatic HTTPS, you need to set the 
+`CADDY_SSL_EMAIL` environment variable to a valid email address on the proxy container. 
 
-## Proxy Configuration
+Please ensure that you mount a volume to the data folder (`/app/data`) to preserve issued certificates between container 
+restarts or updates.
 
-The following environment variables are available to modify the configuration of the proxy container:
+```bash
+docker run -e CADDY_SSL_EMAIL=letsencrypt@example.com -v proxy_data:/app/data -d -p 80:80 -p 443:443 -v /var/run/docker.sock:/var/run/docker.sock:ro ghcr.io/sitepilot/proxy:latest
+```
 
-| Name                      | Value             |
-|---------------------------|-------------------|
-| `CADDY_SSL_EMAIL`         | `internal`        |
+### Additional Servers
+
+When deploying a container to multiple servers, you can specify additional upstream servers (comma-separated) using 
+the `PROXY_HTTP_SERVERS` environment variable. The proxy will include these servers in the configuration and 
+load-balance traffic among them.

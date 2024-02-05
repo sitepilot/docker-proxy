@@ -12,7 +12,7 @@ services:
     image: jwilder/whoami
     environment:
       PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
-      PROXY_HTTP_UPSTREAMS: 1.2.3.4:80,1.2.3.5:80
+      PROXY_HTTP_SERVERS: 1.2.3.4:80,1.2.3.5:80
 
   web2:
     image: jwilder/whoami
