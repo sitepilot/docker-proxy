@@ -50,10 +50,10 @@
         to {{ $network.IP }}:{{ $address.Port }}
         {{ end }}
 
-    {{/* If more than one port exposed, use the one matching PROXY_CONTAINER_PORT env var */}}
-    {{ else if $container.Env.PROXY_CONTAINER_PORT }}
+    {{/* If more than one port exposed, use the one matching PROXY_PORT env var */}}
+    {{ else if $container.Env.PROXY_PORT }}
         {{ range $i, $address := $container.Addresses }}
-            {{ if eq $address.Port $container.Env.PROXY_CONTAINER_PORT }}
+            {{ if eq $address.Port $container.Env.PROXY_PORT }}
         # {{$container.Name}}
         to {{ $network.IP }}:{{ $address.Port }}
             {{ end }}
