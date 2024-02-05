@@ -47,6 +47,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./src
+          load: true
           tags: ghcr.io/sitepilot/proxy:build
           cache-from: type=gha
           cache-to: type=gha,mode=max
