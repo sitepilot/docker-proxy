@@ -1,5 +1,6 @@
 services:
   proxy:
+    image: ghcr.io/sitepilot/proxy:build
     build:
       context: ./src
     volumes:
@@ -9,6 +10,8 @@ services:
     #  PROXY_SSL_EMAIL: letsencrypt@example.com
     #  PROXY_SSL_KEY_FILE: /certs/ssl.key
     #  PROXY_SSL_CERT_FILE: /certs/ssl.cert
+    #  PROXY_BASIC_AUTH: |
+    #    Bob $$2a$$14$$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
     ports:
       - 9080:80
       - 9443:443
@@ -17,10 +20,12 @@ services:
     image: jwilder/whoami
     environment:
       PROXY_HOST: whoami.d1x.sitepilot.io
-      #PROXY_SSL_EMAIL: letsencrypt@example.com
-      #PROXY_SSL_KEY_FILE: /certs/ssl.key
-      #PROXY_SSL_CERT_FILE: /certs/ssl.cert
-      #PROXY_SERVERS: 1.2.3.4:80,1.2.3.5:80
+    #  PROXY_SSL_EMAIL: letsencrypt@example.com
+    #  PROXY_SSL_KEY_FILE: /certs/ssl.key
+    #  PROXY_SSL_CERT_FILE: /certs/ssl.cert
+    #  PROXY_SERVERS: 1.2.3.4:80,1.2.3.5:80
+    #  PROXY_BASIC_AUTH: |
+    #    Bob $$2a$$14$$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
 
   web2:
     image: jwilder/whoami

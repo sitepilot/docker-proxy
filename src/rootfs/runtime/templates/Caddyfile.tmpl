@@ -25,6 +25,7 @@
 {{- $ssl_email := coalesce $container.Env.PROXY_SSL_EMAIL $globals.Env.PROXY_SSL_EMAIL }}
 {{- $ssl_key_path := coalesce $container.Env.PROXY_SSL_KEY_FILE $globals.Env.PROXY_SSL_KEY_FILE }}
 {{- $ssl_cert_path := coalesce $container.Env.PROXY_SSL_CERT_FILE $globals.Env.PROXY_SSL_CERT_FILE }}
+{{- $basic_auth := coalesce $container.Env.PROXY_BASIC_AUTH $globals.Env.PROXY_BASIC_AUTH }}
 
 {{ if and (eq $ssl_email "internal") $ssl_cert_path $ssl_cert_path }}
     tls {{ $ssl_cert_path }} {{ $ssl_key_path }} {
@@ -33,6 +34,12 @@
 {{ else }}
     tls {{ $ssl_email }} {
         on_demand
+    }
+{{ end }}
+
+{{ if $basic_auth }}
+    basicauth /* {
+    	{{ $basic_auth }}
     }
 {{ end }}
 
