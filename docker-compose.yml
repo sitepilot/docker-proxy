@@ -3,12 +3,12 @@ services:
     build:
       context: ./src
     volumes:
-      - ./certs:/certs
+    #  - ./certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock:rw
     #environment:
     #  PROXY_SSL_EMAIL: letsencrypt@example.com
-    #  PROXY_SSL_KEY_PATH: /certs/ssl.key
-    #  PROXY_SSL_CERT_PATH: /certs/ssl.cert
+    #  PROXY_SSL_KEY_FILE: /certs/ssl.key
+    #  PROXY_SSL_CERT_FILE: /certs/ssl.cert
     ports:
       - 9080:80
       - 9443:443
@@ -18,8 +18,8 @@ services:
     environment:
       PROXY_HOST: whoami.d1x.sitepilot.io
       #PROXY_SSL_EMAIL: letsencrypt@example.com
-      #PROXY_SSL_KEY_PATH: /certs/ssl.key
-      #PROXY_SSL_CERT_PATH: /certs/ssl.cert
+      #PROXY_SSL_KEY_FILE: /certs/ssl.key
+      #PROXY_SSL_CERT_FILE: /certs/ssl.cert
       #PROXY_SERVERS: 1.2.3.4:80,1.2.3.5:80
 
   web2:

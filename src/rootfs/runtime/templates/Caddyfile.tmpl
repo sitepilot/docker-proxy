@@ -7,8 +7,8 @@
 }
 
 :443 {
-{{ if and $globals.Env.PROXY_SSL_CERT_PATH $globals.Env.PROXY_SSL_KEY_PATH }}
-    tls {{ $globals.Env.PROXY_SSL_CERT_PATH }} {{ $globals.Env.PROXY_SSL_KEY_PATH }}
+{{ if and $globals.Env.PROXY_SSL_CERT_FILE $globals.Env.PROXY_SSL_KEY_FILE }}
+    tls {{ $globals.Env.PROXY_SSL_CERT_FILE }} {{ $globals.Env.PROXY_SSL_KEY_FILE }}
 {{ else }}
     tls internal {
         on_demand
@@ -23,8 +23,8 @@
 
 {{- $container := index $containers 0 }}
 {{- $ssl_email := coalesce $container.Env.PROXY_SSL_EMAIL $globals.Env.PROXY_SSL_EMAIL }}
-{{- $ssl_key_path := coalesce $container.Env.PROXY_SSL_KEY_PATH $globals.Env.PROXY_SSL_KEY_PATH }}
-{{- $ssl_cert_path := coalesce $container.Env.PROXY_SSL_CERT_PATH $globals.Env.PROXY_SSL_CERT_PATH }}
+{{- $ssl_key_path := coalesce $container.Env.PROXY_SSL_KEY_FILE $globals.Env.PROXY_SSL_KEY_FILE }}
+{{- $ssl_cert_path := coalesce $container.Env.PROXY_SSL_CERT_FILE $globals.Env.PROXY_SSL_CERT_FILE }}
 
 {{ if and (eq $ssl_email "internal") $ssl_cert_path $ssl_cert_path }}
     tls {{ $ssl_cert_path }} {{ $ssl_key_path }} {

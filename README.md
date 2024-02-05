@@ -50,8 +50,8 @@ docker run -e PROXY_SSL_EMAIL=letsencrypt@example.com -e PROXY_HOST=subdomain.ex
 
 To use a custom (wildcard) SSL certificate for all hosts, specify the following environment variables on the proxy container:
 
-* `PROXY_SSL_KEY_PATH`: Path to the private key file.
-* `PROXY_SSL_CERT_PATH`: Path to the certificate file.
+* `PROXY_SSL_KEY_FILE`: Path to the private key file.
+* `PROXY_SSL_CERT_FILE`: Path to the certificate file.
 
 Ensure that both paths are mounted to the proxy container.
 
@@ -61,23 +61,23 @@ docker run -d --rm \
   -v proxy_data:/app/data \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
   -v ./certs:/certs \
-  -e PROXY_SSL_KEY_PATH=/certs/example.com.key \
-  -e PROXY_SSL_CERT_PATH=/certs/example.com.cert \
+  -e PROXY_SSL_KEY_FILE=/certs/example.com.key \
+  -e PROXY_SSL_CERT_FILE=/certs/example.com.cert \
   ghcr.io/sitepilot/proxy:latest
 ```
 
 To use a custom SSL-certificate for a single host, specify the following environment variables on the container:
 
-* `PROXY_SSL_KEY_PATH`: Path to the private key file in the proxy container.
-* `PROXY_SSL_CERT_PATH`: Path to the certificate file in the proxy container.
+* `PROXY_SSL_KEY_FILE`: Path to the private key file in the proxy container.
+* `PROXY_SSL_CERT_FILE`: Path to the certificate file in the proxy container.
 
 Ensure that both paths are mounted to the proxy container.
 
 ```bash
 docker run \
   -e PROXY_HOST=subdomain.example.com \
-  -e PROXY_SSL_KEY_PATH=/certs/example.com.key \
-  -e PROXY_SSL_CERT_PATH=/certs/example.com.crt \
+  -e PROXY_SSL_KEY_FILE=/certs/example.com.key \
+  -e PROXY_SSL_CERT_FILE=/certs/example.com.crt \
   ...
 ```
 
