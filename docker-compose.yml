@@ -3,7 +3,12 @@ services:
     build:
       context: ./src
     volumes:
+      - ./certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock:rw
+    #environment:
+    #  PROXY_SSL_EMAIL: letsencrypt@example.com
+    #  PROXY_SSL_KEY_PATH: /certs/ssl.key
+    #  PROXY_SSL_CERT_PATH: /certs/ssl.cert
     ports:
       - 9080:80
       - 9443:443
@@ -11,15 +16,18 @@ services:
   web:
     image: jwilder/whoami
     environment:
-      PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
-      PROXY_HTTP_SERVERS: 1.2.3.4:80,1.2.3.5:80
+      PROXY_HOST: whoami.d1x.sitepilot.io
+      #PROXY_SSL_EMAIL: letsencrypt@example.com
+      #PROXY_SSL_KEY_PATH: /certs/ssl.key
+      #PROXY_SSL_CERT_PATH: /certs/ssl.cert
+      #PROXY_SERVERS: 1.2.3.4:80,1.2.3.5:80
 
   web2:
     image: jwilder/whoami
     environment:
-      PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
+      PROXY_HOST: whoami.d1x.sitepilot.io
 
   web3:
     image: jwilder/whoami
     environment:
-      PROXY_HTTP_HOST: whoami.d1x.sitepilot.io
+      PROXY_HOST: whoami.d1x.sitepilot.io

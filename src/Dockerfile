@@ -5,7 +5,7 @@ ARG DOCKERGEN_VERSION=0.10.6
 
 USER root
 
-ENV CADDY_LOGS_DIR="$RUNTIME_WORKDIR/logs" \
+ENV PROXY_SSL_EMAIL="internal" \
     CADDY_DATA_DIR="$RUNTIME_WORKDIR/data"
 
 RUN rt-install gnupg \
