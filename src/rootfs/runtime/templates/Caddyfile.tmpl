@@ -46,8 +46,8 @@
 {{ end }}
 
     reverse_proxy {
-        lb_policy {{ $lb_policy }}
         lb_retries {{ $lb_retries }}
+        lb_policy {{ $lb_policy }}
 {{ range $index, $container := $containers }}
 
     {{ $addrLen := len $container.Addresses }}

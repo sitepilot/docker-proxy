@@ -26,13 +26,6 @@ services:
     #  PROXY_SERVERS: 1.2.3.4:80,1.2.3.5:80
     #  PROXY_BASIC_AUTH: |
     #    Bob $$2a$$14$$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
-
-  web2:
-    image: jwilder/whoami
-    environment:
-      PROXY_HOST: whoami.d1x.sitepilot.io
-
-  web3:
-    image: jwilder/whoami
-    environment:
-      PROXY_HOST: whoami.d1x.sitepilot.io
+    deploy:
+      mode: replicated
+      replicas: 3
