@@ -54,6 +54,7 @@ jobs:
 
       - name: Run unit tests
         run: |
+          docker run ghcr.io/sitepilot/proxy:build caddy --version
           docker run ghcr.io/sitepilot/proxy:build docker-gen -version
 
       - name: Build and publish image
@@ -66,3 +67,4 @@ jobs:
           platforms: linux/amd64, linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
