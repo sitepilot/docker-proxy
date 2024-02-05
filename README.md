@@ -21,7 +21,7 @@ container can expose one HTTP port through the proxy.
 Start the proxy container with the following command:
 
 ```bash
-docker run -d -p 80:80 -p 443:443 -v /var/run/docker.sock:/var/run/docker.sock:ro ghcr.io/sitepilot/proxy:v2
+docker run -d -p 80:80 -p 443:443 -v /var/run/docker.sock:/var/run/docker.sock:ro ghcr.io/sitepilot/proxy:1.x
 ```
 
 Then, start any containers you want to be proxied with the `PROXY_HTTP_HOST` environment variable:
