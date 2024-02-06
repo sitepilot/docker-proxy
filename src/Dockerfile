@@ -1,4 +1,4 @@
-FROM ghcr.io/sitepilot/runtime:v1 AS proxy
+FROM ghcr.io/sitepilot/runtime:1
 
 ARG TARGETARCH
 ARG DOCKERGEN_VERSION=0.10.6
